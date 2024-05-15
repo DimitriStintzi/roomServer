@@ -19,11 +19,11 @@ app.use('/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'templates/games/tic-tac-toe.html'));
+    res.sendFile(path.join(__dirname, 'templates/tic-tac-toe.html'));
 });
 
 app.get('/games/tic-tac-toe', (req, res) => {
-    res.sendFile(path.join(__dirname, 'templates/games/tic-tac-toe.html'));
+    res.sendFile(path.join(__dirname, 'templates/tic-tac-toe.html'));
 });
 
 http.listen(port, () => {
@@ -94,7 +94,6 @@ io.on('connection', (socket) => {
         })
     });
 });
-
 
 function createRoom(player) {
     const room = { id: roomId(), players: [] };
