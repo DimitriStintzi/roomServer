@@ -33,7 +33,7 @@ const roomsCard = document.getElementById('rooms-card');
 const roomsList = document.getElementById('rooms-list');
 
 const turnMsg = document.getElementById('turn-message');
-const linkToShare = document.getElementById('link-to-share');
+// const linkToShare = document.getElementById('link-to-share');
 
 let ennemyUsername = "";
 
@@ -85,7 +85,7 @@ $("#form").on('submit', function (e) {
 
 socket.on('join room', (roomId) => {
     player.roomId = roomId;
-    linkToShare.innerHTML = `<a href="${window.location.href}?room=${player.roomId}" target="_blank">${window.location.href}?room=${player.roomId}</a>`;
+    // linkToShare.innerHTML = `<a href="${window.location.href}?room=${player.roomId}" target="_blank">${window.location.href}?room=${player.roomId}</a>`;
 });
 
 // Rejoindre une room
