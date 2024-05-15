@@ -58,8 +58,9 @@ io.on('connection', (socket) => {
 
         io.to(socket.id).emit('join room', room.id);
 
-        if (room.players.length === 2) {
+        if (room.players.length === 4) {
             io.to(room.id).emit('start game', room.players);
+            spin.classList.add('d-none');
         }
     });
 
@@ -72,13 +73,6 @@ io.on('connection', (socket) => {
         io.to(player.roomId).emit('play', player);
     });
 
-    socket.on('play again', (roomId) => {
-        const room = rooms.find(r => r.id === roomId);
-
-        if (room && room.players.length === 2) {
-            io.to(room.id).emit('play again', room.players);
-        }
-    })
 
     socket.on('disconnect', () => {
         console.log(`[disconnect] ${socket.id}`);

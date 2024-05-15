@@ -19,13 +19,11 @@ if (roomId) {
 
 const usernameInput = document.getElementById('username');
 
-const gameCard = document.getElementById('game-card');
 
 const userCard = document.getElementById('user-card');
 
-const restartArea = document.getElementById('restart-area');
 const waitingArea = document.getElementById('waiting-area');
-
+const spin = document.getElementById('spinner');
 const roomsCard = document.getElementById('rooms-card');
 const roomsList = document.getElementById('rooms-list');
 
