@@ -6,6 +6,7 @@ const app = express();
 const http = require('http').createServer(app);
 const path = require('path');
 const port = 8080;
+const ip = 'localhost'
 
 /**
  * @type {Socket}
@@ -26,7 +27,7 @@ app.get('/games/tic-tac-toe', (req, res) => {
 });
 
 http.listen(port, () => {
-    console.log(`Listening on https://localhost:${port}`);
+    console.log(`Listening on https://${ip}:${port}`);
 });
 
 let rooms = [];
