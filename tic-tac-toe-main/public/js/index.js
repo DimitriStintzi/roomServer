@@ -26,6 +26,7 @@ const waitingArea = document.getElementById('waiting-area');
 const spin = document.getElementById('spinner');
 const roomsCard = document.getElementById('rooms-card');
 const roomsList = document.getElementById('rooms-list');
+const playerList = document.getElementById('players-list')
 
 const turnMsg = document.getElementById('turn-message');
 // const linkToShare = document.getElementById('link-to-share');
@@ -33,8 +34,8 @@ const turnMsg = document.getElementById('turn-message');
 socket.emit('get rooms');
 socket.on('list rooms', (rooms) => {
     let html = "";
-
     if (rooms.length > 0) {
+        roomsCard.classList.remove('d-none');
         rooms.forEach(room => {
             if (room.players.length !== 4) {
                 html += `<li class="list-group-item d-flex justify-content-between">
@@ -42,20 +43,25 @@ socket.on('list rooms', (rooms) => {
                             <button class="btn btn-sm btn-success join-room" data-room="${room.id}">Rejoindre</button>
                         </li>`;
             }
-            if(room.players.length == 4){
-                spin.classList.add('d-none');
-            }
         });
     }
 
     if (html !== "") {
-        roomsCard.classList.remove('d-none');
         roomsList.innerHTML = html;
 
         for (const element of document.getElementsByClassName('join-room')) {
             element.addEventListener('click', joinRoom, false)
         }
     }
+});
+
+socket.on('new player', (players)=>{
+    let html ="";
+    players.forEach(player =>{
+        html +=`<li class="list-group-item d-flex justify-content-between">${player.username}
+            </li>`;
+    })
+    playerList.innerHTML = html;
 });
 
 $("#form").on('submit', function (e) {
@@ -81,8 +87,12 @@ $("#form").on('submit', function (e) {
 
 socket.on('join room', (roomId) => {
     player.roomId = roomId;
-    // linkToShare.innerHTML = `<a href="${window.location.href}?room=${player.roomId}" target="_blank">${window.location.href}?room=${player.roomId}</a>`;
+
 });
+
+socket.on('full', () =>{
+    spin.classList.add('d-none');
+})
 
 // Rejoindre une room
 const joinRoom = function () {
@@ -96,5 +106,6 @@ const joinRoom = function () {
         userCard.hidden = true;
         waitingArea.classList.remove('d-none');
         roomsCard.classList.add('d-none');
+
     }
 }

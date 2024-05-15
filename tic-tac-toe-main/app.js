@@ -55,11 +55,11 @@ io.on('connection', (socket) => {
         }
 
         socket.join(room.id);
-
         io.to(socket.id).emit('join room', room.id);
 
-        if (room.players.length === 4) {
-            io.to(room.id).emit('start game', room.players);
+        io.to(room.id).emit('new player', room.players);
+        if (room.players.length === 2) {
+            io.to(room.id).emit('full');
         }
     });
 
