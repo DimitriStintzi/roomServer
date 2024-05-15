@@ -95,6 +95,7 @@ io.on('connection', (socket) => {
     });
 });
 
+
 function createRoom(player) {
     const room = { id: roomId(), players: [] };
 
