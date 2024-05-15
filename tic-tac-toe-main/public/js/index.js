@@ -42,6 +42,9 @@ socket.on('list rooms', (rooms) => {
                             <button class="btn btn-sm btn-success join-room" data-room="${room.id}">Rejoindre</button>
                         </li>`;
             }
+            if(room.players.length == 4){
+                spin.classList.add('d-none');
+            }
         });
     }
 

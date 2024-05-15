@@ -60,7 +60,6 @@ io.on('connection', (socket) => {
 
         if (room.players.length === 4) {
             io.to(room.id).emit('start game', room.players);
-            spin.classList.add('d-none');
         }
     });
 
