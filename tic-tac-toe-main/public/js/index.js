@@ -36,7 +36,7 @@ socket.on('list rooms', (rooms) => {
 
     if (rooms.length > 0) {
         rooms.forEach(room => {
-            if (room.players.length !== 2) {
+            if (room.players.length !== 4) {
                 html += `<li class="list-group-item d-flex justify-content-between">
                             <p class="p-0 m-0 flex-grow-1 fw-bold">Salon de ${room.players[0].username}</p>
                             <button class="btn btn-sm btn-success join-room" data-room="${room.id}">Rejoindre</button>
