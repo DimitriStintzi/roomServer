@@ -1,14 +1,11 @@
-
 // Objet player -> à mettre : PlayerId, Username, RoomId
 const player = {
-    host: false,
-    playedCell: "",
+    playerId :"",
     roomId: null,
     username: "",
+    host: false,
     socketId: "",
-    symbol: "X",
-    turn: false,
-    win: false
+    // win: false
 };
 
 const socket = io();
@@ -35,8 +32,6 @@ const roomsList = document.getElementById('rooms-list');
 const turnMsg = document.getElementById('turn-message');
 // const linkToShare = document.getElementById('link-to-share');
 
-let ennemyUsername = "";
-
 socket.emit('get rooms');
 socket.on('list rooms', (rooms) => {
     let html = "";
@@ -45,7 +40,7 @@ socket.on('list rooms', (rooms) => {
         rooms.forEach(room => {
             if (room.players.length !== 2) {
                 html += `<li class="list-group-item d-flex justify-content-between">
-                            <p class="p-0 m-0 flex-grow-1 fw-bold">Salon de ${room.players[0].username} - ${room.id}</p>
+                            <p class="p-0 m-0 flex-grow-1 fw-bold">Salon de ${room.players[0].username}</p>
                             <button class="btn btn-sm btn-success join-room" data-room="${room.id}">Rejoindre</button>
                         </li>`;
             }
