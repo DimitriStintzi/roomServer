@@ -94,6 +94,15 @@ socket.on('full', () =>{
     spin.classList.add('d-none');
 })
 
+
+
+const disconnect = () => {
+    socket.emit('disconnect');
+};
+
+document.getElementById('deco').addEventListener('click', disconnect);
+
+
 // Rejoindre une room
 const joinRoom = function () {
     if (usernameInput.value !== "") {

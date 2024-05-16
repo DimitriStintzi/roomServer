@@ -72,6 +72,26 @@ io.on('connection', (socket) => {
         io.to(player.roomId).emit('play', player);
     });
 
+    socket.on('deco', () => {
+        let disconnectedPlayer = null;
+        let disconnectedRoom = null;
+    
+        
+        rooms.forEach(room => {
+            room.players.forEach(player => {
+                if (player.socketId === socket.id) {
+                    disconnectedPlayer = player;
+                    disconnectedRoom = room;
+                }
+            });
+        });
+    
+        if (disconnectedPlayer && disconnectedRoom) {
+            disconnectedRoom.players = disconnectedRoom.players.filter(player => player.socketId !== socket.id);
+        }
+    });
+    
+
 
     socket.on('disconnect', () => {
         console.log(`[disconnect] ${socket.id}`);
