@@ -59,11 +59,12 @@ io.on('connection', (socket) => {
         io.to(socket.id).emit('join room', room.id);
 
         io.to(room.id).emit('new player', room.players);
-        if (room.players.length === 2) {
+        if (room.players.length === 4) {
             io.to(room.id).emit('full');
         }
     });
 
+    
     socket.on('get rooms', () => {
         io.to(socket.id).emit('list rooms', rooms);
     });
