@@ -58,7 +58,7 @@ io.on('connection', (socket) => {
         socket.join(room.id);
         io.to(socket.id).emit('join room', room.id);
 
-        io.to(room.id).emit('new player', room.players);
+        io.to(room.id).emit('update player', room.players);
         if (room.players.length === 4) {
             io.to(room.id).emit('full');
         }
@@ -74,23 +74,24 @@ io.on('connection', (socket) => {
         io.to(player.roomId).emit('play', player);
     });
 
-    socket.on('deco', () => {
-        let disconnectedPlayer = null;
+// Clic sur le bouton déconnexion
+    socket.on('disconect player', (player) => {
         let disconnectedRoom = null;
-    
-        
-        rooms.forEach(room => {
-            room.players.forEach(player => {
-                if (player.socketId === socket.id) {
-                    disconnectedPlayer = player;
-                    disconnectedRoom = room;
-                }
-            });
-        });
+        let disconnectedPlayer = null;
+        console.log(`[Leave room] - ${player.roomId} - ${player.username}`);
+        disconnectedRoom = rooms.find(r => r.id === player.roomId);
+        disconnectedPlayer = player;
     
         if (disconnectedPlayer && disconnectedRoom) {
-            disconnectedRoom.players = disconnectedRoom.players.filter(player => player.socketId !== socket.id);
-        }
+            disconnectedRoom.players = disconnectedRoom.players.filter(player => player.socketId !== socket.id); //Supression du joueur
+            io.to(socket.id).emit('leave room');
+            player.roomId= null;
+            if(disconnectedRoom.players.length === 0){
+                rooms = rooms.filter(room => room.id !== disconnectedRoom.id); //Supression de la room si il ne reste plus de joueurs
+                console.log(rooms);
+            }
+        } 
+        io.to(disconnectedRoom).emit('update player', disconnectedRoom.players);
     });
     
 

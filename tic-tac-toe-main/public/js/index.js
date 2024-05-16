@@ -18,15 +18,13 @@ if (roomId) {
 }
 
 const usernameInput = document.getElementById('username');
-
-
 const userCard = document.getElementById('user-card');
-
 const waitingArea = document.getElementById('waiting-area');
 const spin = document.getElementById('spinner');
 const roomsCard = document.getElementById('rooms-card');
 const roomsList = document.getElementById('rooms-list');
-const playerList = document.getElementById('players-list')
+const playerList = document.getElementById('players-list');
+const disconnect_btn = document.getElementById('disconect-player');
 
 const turnMsg = document.getElementById('turn-message');
 // const linkToShare = document.getElementById('link-to-share');
@@ -55,7 +53,7 @@ socket.on('list rooms', (rooms) => {
     }
 });
 
-socket.on('new player', (players)=>{
+socket.on('update player', (players)=>{
     let html ="";
     players.forEach(player =>{
         html +=`<li class="list-group-item d-flex justify-content-between">${player.username}
@@ -73,7 +71,6 @@ $("#form").on('submit', function (e) {
         player.roomId = roomId;
     } else {
         player.host = true;
-        player.turn = true;
     }
 
     player.socketId = socket.id;
@@ -84,24 +81,31 @@ $("#form").on('submit', function (e) {
 
     socket.emit('playerData', player);
 });
-
+// ------- Room interaction avec joueurs 
+//Connexion à une room
 socket.on('join room', (roomId) => {
     player.roomId = roomId;
 
 });
 
+//Deconnexion à une room
+socket.on('leave room', ()=>{
+    player.roomId = null;
+});
+
 socket.on('full', () =>{
     spin.classList.add('d-none');
-})
+});
 
-
-
-const disconnect = () => {
-    socket.emit('disconnect');
-};
-
-document.getElementById('deco').addEventListener('click', disconnect);
-
+//--------- Quitter une room
+disconnect_btn.addEventListener('click', ()=>{
+    socket.emit("disconect player", player);
+    //On revient sur la page des rooms
+    waitingArea.classList.add('d-none');
+    usernameInput.innerHTML = player.username;
+    socket.emit('get rooms');
+    userCard.hidden = false;
+});
 
 // Rejoindre une room
 const joinRoom = function () {

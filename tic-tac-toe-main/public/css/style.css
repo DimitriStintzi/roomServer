@@ -2,10 +2,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 1rem;
 }
 
 .list-players{
     width: 100%;
-    margin-bottom: 1rem;
+}
+
+.spinner-border{
+    margin: 1rem;
 }
