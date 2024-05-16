@@ -16,6 +16,7 @@ const io = require('socket.io')(http);
 app.use('/bootstrap/css', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/css')));
 app.use('/bootstrap/js', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js')));
 app.use('/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
@@ -58,11 +59,12 @@ io.on('connection', (socket) => {
         io.to(socket.id).emit('join room', room.id);
 
         io.to(room.id).emit('new player', room.players);
-        if (room.players.length === 2) {
+        if (room.players.length === 4) {
             io.to(room.id).emit('full');
         }
     });
 
+    
     socket.on('get rooms', () => {
         io.to(socket.id).emit('list rooms', rooms);
     });

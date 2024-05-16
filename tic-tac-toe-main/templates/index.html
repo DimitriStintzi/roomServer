@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="../public/css/style.css">
     <title>Menu</title>
 </head>
 
@@ -37,8 +37,9 @@
                 <div class="d-none" id="waiting-area">
                     <div class="card mb-3">
                         <div class="card-header">En attente d'un autre joueur</div>
-                        <div class="card-body mx-auto">
-                            <ul class="list-group list-group-flush" id="players-list"></ul>
+                        <div class="player-cadre">
+                            <div class="list-players" id="players-list"></div>
+
                             <div class="spinner-border" role="status" id="spinner">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
