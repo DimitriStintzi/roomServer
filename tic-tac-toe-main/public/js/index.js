@@ -1,11 +1,10 @@
-// Objet player -> à mettre : PlayerId, Username, RoomId
+// Objet player
 const player = {
     playerId :"",
     roomId: null,
     username: "",
     host: false,
     socketId: "",
-    // win: false
 };
 
 const socket = io();
@@ -26,21 +25,19 @@ const roomsList = document.getElementById('rooms-list');
 const playerList = document.getElementById('players-list');
 const disconnect_btn = document.getElementById('disconect-player');
 
-const turnMsg = document.getElementById('turn-message');
-// const linkToShare = document.getElementById('link-to-share');
-
 socket.emit('get rooms');
 socket.on('list rooms', (rooms) => {
     let html = "";
     if (rooms.length > 0) {
         roomsCard.classList.remove('d-none');
         rooms.forEach(room => {
+            html += `<li class="list-group-item d-flex justify-content-between">
+                    <p class="p-0 m-0 flex-grow-1 fw-bold">Salon de ${room.players[0].username} (${room.players.length}/4}</p>`;
             if (room.players.length !== 4) {
-                html += `<li class="list-group-item d-flex justify-content-between">
-                            <p class="p-0 m-0 flex-grow-1 fw-bold">Salon de ${room.players[0].username}</p>
-                            <button class="btn btn-sm btn-success join-room" data-room="${room.id}">Rejoindre</button>
-                        </li>`;
+                html+= `<button class="btn btn-sm btn-success join-room" data-room="${room.id}">Rejoindre</button>`;
             }
+            html +=`</li>`;
+
         });
     }
 
@@ -53,14 +50,47 @@ socket.on('list rooms', (rooms) => {
     }
 });
 
+socket.on('update rooms', () => {
+    if(!player.roomId){
+        console.log(['[Updating...]']);
+        if(rooms.length === 0){
+            roomsCard.classList.add('d-none');
+        }
+        else{
+            rooms.forEach(room => {
+                html += `<li class="list-group-item d-flex justify-content-between">
+                        <p class="p-0 m-0 flex-grow-1 fw-bold">Salon de ${room.players[0].username} (${room.players.length}/4)</p>`;
+                if (room.players.length !== 4) {
+                    html+= `<button class="btn btn-sm btn-success join-room" data-room="${room.id}">Rejoindre</button>`;
+                }
+                html +=`</li>`;
+    
+            });
+    
+        if (html !== "") {
+            roomsList.innerHTML = html;
+    
+            for (const element of document.getElementsByClassName('join-room')) {
+                element.addEventListener('click', joinRoom, false)
+            }
+        }
+    }
+    }
+});
+
 socket.on('update player', (players)=>{
     let html ="";
     players.forEach(player =>{
-        html +=`<li class="list-group-item d-flex justify-content-between">${player.username}
-            </li>`;
+        html +=`<li class="list-group-item d-flex justify-content-between">${player.username}`
+        if(player.host === true){ //Si l'utilisateur est hôte
+            html += `<i class="fa-regular fa-crown"></i>`;
+        }
+        html+=`</li>`;
     })
     playerList.innerHTML = html;
 });
+
+
 
 $("#form").on('submit', function (e) {
     e.preventDefault();
@@ -91,6 +121,9 @@ socket.on('join room', (roomId) => {
 //Deconnexion à une room
 socket.on('leave room', ()=>{
     player.roomId = null;
+    if(player.host === true){
+        player.host = false;
+    }
 });
 
 socket.on('full', () =>{

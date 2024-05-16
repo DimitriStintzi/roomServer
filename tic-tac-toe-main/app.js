@@ -32,10 +32,13 @@ http.listen(port, () => {
 });
 
 let rooms = [];
+let global_clients = [];
+
+
 
 io.on('connection', (socket) => {
     console.log(`[connection] ${socket.id}`);
-
+    global_clients.push(socket.id);
     socket.on('playerData', (player) => {
         console.log(`[playerData] ${player.username}`);
 
@@ -59,6 +62,9 @@ io.on('connection', (socket) => {
         io.to(socket.id).emit('join room', room.id);
 
         io.to(room.id).emit('update player', room.players);
+
+        updateRooms();
+
         if (room.players.length === 4) {
             io.to(room.id).emit('full');
         }
@@ -69,47 +75,62 @@ io.on('connection', (socket) => {
         io.to(socket.id).emit('list rooms', rooms);
     });
 
-    socket.on('play', (player) => {
-        console.log(`[play] ${player.username}`);
-        io.to(player.roomId).emit('play', player);
-    });
+//----- Déconnexions -----//
 
 // Clic sur le bouton déconnexion
     socket.on('disconect player', (player) => {
         let disconnectedRoom = null;
         let disconnectedPlayer = null;
-        console.log(`[Leave room] - ${player.roomId} - ${player.username}`);
+        // console.log(`[Leave room] - ${player.roomId} - ${player.username}`);
         disconnectedRoom = rooms.find(r => r.id === player.roomId);
         disconnectedPlayer = player;
     
         if (disconnectedPlayer && disconnectedRoom) {
-            disconnectedRoom.players = disconnectedRoom.players.filter(player => player.socketId !== socket.id); //Supression du joueur
-            io.to(socket.id).emit('leave room');
-            player.roomId= null;
-            if(disconnectedRoom.players.length === 0){
-                rooms = rooms.filter(room => room.id !== disconnectedRoom.id); //Supression de la room si il ne reste plus de joueurs
-                console.log(rooms);
-            }
+            disconnect_to_room(disconnectedPlayer, disconnectedRoom, socket);
         } 
-        io.to(disconnectedRoom).emit('update player', disconnectedRoom.players);
     });
     
 
-
+// Déconnexion par refresh de la page
     socket.on('disconnect', () => {
         console.log(`[disconnect] ${socket.id}`);
-        let room = null;
-
+        global_clients.splice(socket.id);
         rooms.forEach(r => {
             r.players.forEach(p => {
-                if (p.socketId === socket.id && p.host) {
-                    room = r;
-                    rooms = rooms.filter(r => r !== room);
+                if (p.socketId === socket.id) {
+                    disconnect_to_room(p,r, socket);
                 }
             })
         })
     });
 });
+
+
+//-------------------------------------------//
+//---------------- Fonctions ----------------//
+//-------------------------------------------//
+
+// Deconnexion du joueur 
+function disconnect_to_room(disconnectedPlayer, disconnectedRoom, socket){
+    if(disconnectedPlayer.host === true){  //Transfert du role d'hôte si l'hôte a quitté la partie
+        if(disconnectedRoom.players[1]){
+        // console.log(`[Transfert host] - ${disconnectedPlayer.username} -> ${disconnectedRoom.players[1]}`)
+        disconnectedRoom.players[1].host = true;
+        }
+    }
+    disconnectedRoom.players = disconnectedRoom.players.filter(player => player.socketId !== socket.id); //Supression du joueur
+    console.log(`${socket.id} has leave room`);
+    io.to(socket.id).emit('leave room');
+
+    if(disconnectedRoom.players.length === 0){
+        rooms = rooms.filter(room => room.id !== disconnectedRoom.id); //Supression de la room si il ne reste plus de joueurs
+    }
+    else{ // Sinon on uptade la liste des joueurs
+        io.to(disconnectedRoom.id).emit('update player', disconnectedRoom.players);
+    }
+    updateRooms();
+}
+
 
 function createRoom(player) {
     const room = { id: roomId(), players: [] };
@@ -118,10 +139,18 @@ function createRoom(player) {
 
     room.players.push(player);
     rooms.push(room);
+    
 
     return room;
 }
 
 function roomId() {
     return Math.random().toString(36).substr(2, 9);
+}
+
+function updateRooms(){
+    global_clients.forEach(client =>{
+        console.log('[Update rooms]', client);
+        io.to(client).emit('update rooms');
+    })
 }
