@@ -32,7 +32,7 @@ socket.on('list rooms', (rooms) => {
         roomsCard.classList.remove('d-none');
         rooms.forEach(room => {
             html += `<li class="list-group-item d-flex justify-content-between">
-                    <p class="p-0 m-0 flex-grow-1 fw-bold">Salon de ${room.players[0].username} (${room.players.length}/4}</p>`;
+                    <p class="p-0 m-0 flex-grow-1 fw-bold">Salon de ${room.players[0].username} (${room.players.length}/4)</p>`;
             if (room.players.length !== 4) {
                 html+= `<button class="btn btn-sm btn-success join-room" data-room="${room.id}">Rejoindre</button>`;
             }
@@ -50,21 +50,22 @@ socket.on('list rooms', (rooms) => {
     }
 });
 
-socket.on('update rooms', () => {
+socket.on('update rooms', (rooms) => {
     if(!player.roomId){
-        console.log(['[Updating...]']);
+        console.log(['Updating...']);
         if(rooms.length === 0){
             roomsCard.classList.add('d-none');
         }
         else{
+            let html = "";
+            roomsCard.classList.remove('d-none');
             rooms.forEach(room => {
                 html += `<li class="list-group-item d-flex justify-content-between">
                         <p class="p-0 m-0 flex-grow-1 fw-bold">Salon de ${room.players[0].username} (${room.players.length}/4)</p>`;
                 if (room.players.length !== 4) {
                     html+= `<button class="btn btn-sm btn-success join-room" data-room="${room.id}">Rejoindre</button>`;
                 }
-                html +=`</li>`;
-    
+                html +=`</li>`;    
             });
     
         if (html !== "") {

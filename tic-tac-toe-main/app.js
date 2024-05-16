@@ -32,13 +32,9 @@ http.listen(port, () => {
 });
 
 let rooms = [];
-let global_clients = [];
-
-
 
 io.on('connection', (socket) => {
     console.log(`[connection] ${socket.id}`);
-    global_clients.push(socket.id);
     socket.on('playerData', (player) => {
         console.log(`[playerData] ${player.username}`);
 
@@ -63,7 +59,7 @@ io.on('connection', (socket) => {
 
         io.to(room.id).emit('update player', room.players);
 
-        updateRooms();
+        io.emit('update rooms', rooms);
 
         if (room.players.length === 4) {
             io.to(room.id).emit('full');
@@ -81,7 +77,6 @@ io.on('connection', (socket) => {
     socket.on('disconect player', (player) => {
         let disconnectedRoom = null;
         let disconnectedPlayer = null;
-        // console.log(`[Leave room] - ${player.roomId} - ${player.username}`);
         disconnectedRoom = rooms.find(r => r.id === player.roomId);
         disconnectedPlayer = player;
     
@@ -94,7 +89,6 @@ io.on('connection', (socket) => {
 // Déconnexion par refresh de la page
     socket.on('disconnect', () => {
         console.log(`[disconnect] ${socket.id}`);
-        global_clients.splice(socket.id);
         rooms.forEach(r => {
             r.players.forEach(p => {
                 if (p.socketId === socket.id) {
@@ -104,7 +98,6 @@ io.on('connection', (socket) => {
         })
     });
 });
-
 
 //-------------------------------------------//
 //---------------- Fonctions ----------------//
@@ -119,7 +112,6 @@ function disconnect_to_room(disconnectedPlayer, disconnectedRoom, socket){
         }
     }
     disconnectedRoom.players = disconnectedRoom.players.filter(player => player.socketId !== socket.id); //Supression du joueur
-    console.log(`${socket.id} has leave room`);
     io.to(socket.id).emit('leave room');
 
     if(disconnectedRoom.players.length === 0){
@@ -128,7 +120,7 @@ function disconnect_to_room(disconnectedPlayer, disconnectedRoom, socket){
     else{ // Sinon on uptade la liste des joueurs
         io.to(disconnectedRoom.id).emit('update player', disconnectedRoom.players);
     }
-    updateRooms();
+    io.emit('update rooms', rooms);
 }
 
 
@@ -148,9 +140,3 @@ function roomId() {
     return Math.random().toString(36).substr(2, 9);
 }
 
-function updateRooms(){
-    global_clients.forEach(client =>{
-        console.log('[Update rooms]', client);
-        io.to(client).emit('update rooms');
-    })
-}
