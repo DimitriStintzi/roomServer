@@ -4,10 +4,62 @@
     align-items: center;
 }
 
+.row{
+    align-items: center;
+    justify-content: center;
+}
+.spinner-border{
+    margin: 1rem;
+}
+.darken{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+.wainting-game{
+    z-index: 999;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px 40px;
+    background-color: #3b3b3b;
+    color: #fff;
+    width: 60%;
+    margin: auto;
+}
+.decision-btn{
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin-top: 20px;
+}
+.btn-refuse{
+    color: #fff;
+    background-color: #930000;
+    border-color: #930000;
+}
+.btn-accept{
+    color: #fff;
+    background-color: #199300;
+    border-color: #199300;
+}
+
 .list-players{
     width: 100%;
 }
 
-.spinner-border{
-    margin: 1rem;
-}
+ @media (max-width: 950px) {
+    .wainting-game{
+        min-width: 80vw;
+    }
+
+    .decision-btn{
+        width: 100%;
+    }
+} 

@@ -97,6 +97,19 @@ io.on('connection', (socket) => {
             })
         })
     });
+
+    //------------------------------------------------//
+    //-------- Communication Unity et joueurs --------//
+    //------------------------------------------------//
+    socket.on('asking players', ()=>{
+        rooms.forEach(r =>{
+            if(r.players.length > 1){
+                r.players.forEach(p=>{
+                    io.to(p.socketId).emit('waiting players');
+                })
+            }
+        })
+    })
 });
 
 //-------------------------------------------//
@@ -107,8 +120,9 @@ io.on('connection', (socket) => {
 function disconnect_to_room(disconnectedPlayer, disconnectedRoom, socket){
     if(disconnectedPlayer.host === true){  //Transfert du role d'hôte si l'hôte a quitté la partie
         if(disconnectedRoom.players[1]){
-        // console.log(`[Transfert host] - ${disconnectedPlayer.username} -> ${disconnectedRoom.players[1]}`)
-        disconnectedRoom.players[1].host = true;
+            disconnectedRoom.players[1].host = true;
+            console.log(`[Transfert host] - ${disconnectedPlayer.username} -> ${disconnectedRoom.players[1].username}`)
+            io.to(disconnectedRoom.players[1].socketId).emit('new host');
         }
     }
     disconnectedRoom.players = disconnectedRoom.players.filter(player => player.socketId !== socket.id); //Supression du joueur
@@ -139,4 +153,5 @@ function createRoom(player) {
 function roomId() {
     return Math.random().toString(36).substr(2, 9);
 }
+
 

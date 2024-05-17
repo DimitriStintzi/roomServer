@@ -14,7 +14,7 @@
 <body>
     <div class="container mt-5">
         <div class="row">
-            <div class="col-sm-12 col-md-6 offset-md-3">
+            <div class="col-sm-12 col-md-6 ">
                 <div class="card mb-3" id="user-card">
                     <div class="box">
                         
@@ -23,10 +23,10 @@
                             <span class="borderLine"></span>
                             <form method="POST" id="form">
                                 <div class="mb-3">
-                                    <h2>Sign in</h2>
+                                    <h2>Connexion</h2>
                                     <div class="inputBox">
                                         <input type="text" class="form-control" id="username" minlength="2" maxlength="20"
-                                            placeholder="Saisir votre nom d'utilisateur" required>
+                                            placeholder="Saisir votre pseudo" required>
                                         <span for="username" class="form-label"></span>
                                         <i></i>
                                     </div>     
@@ -58,6 +58,15 @@
 
                 </div>
 
+            </div>
+
+            <div class="container wainting-game d-none" id="wainting-game">
+                <div class="darken"></div>
+                <h2 id="message"></h2>
+                <div class="decision-btn">
+                    <button class="btn btn-refuse d-none" id="refuse">Refuser</button>
+                    <button class="btn btn-accept d-none" id="accept">Accepter</button>
+                </div>
             </div>
         </div>
     </div>

@@ -24,6 +24,9 @@ const roomsCard = document.getElementById('rooms-card');
 const roomsList = document.getElementById('rooms-list');
 const playerList = document.getElementById('players-list');
 const disconnect_btn = document.getElementById('disconect-player');
+const waintingMessage = document.getElementById('wainting-game');
+const acceptGame = document.getElementById('accept');
+const refuseGame = document.getElementById('refuse');
 
 socket.emit('get rooms');
 socket.on('list rooms', (rooms) => {
@@ -52,7 +55,6 @@ socket.on('list rooms', (rooms) => {
 
 socket.on('update rooms', (rooms) => {
     if(!player.roomId){
-        console.log(['Updating...']);
         if(rooms.length === 0){
             roomsCard.classList.add('d-none');
         }
@@ -90,6 +92,10 @@ socket.on('update player', (players)=>{
     })
     playerList.innerHTML = html;
 });
+
+socket.on('new host',() => {
+    player.host = true;
+})
 
 
 
@@ -131,6 +137,7 @@ socket.on('full', () =>{
     spin.classList.add('d-none');
 });
 
+
 //--------- Quitter une room
 disconnect_btn.addEventListener('click', ()=>{
     socket.emit("disconect player", player);
@@ -156,3 +163,30 @@ const joinRoom = function () {
 
     }
 }
+
+
+
+// ------ Jouabilité
+socket.on('wainting players', () =>{
+    waintingMessage.classList.remove('d-none');
+    let html ="";
+    if(player.host === true){
+        html += "Invitation à une partie";
+        refuseGame.classList.remove('d-none');
+        acceptGame.classList.remove('d-none');
+    }
+    else{
+        html += "En attente de l'hôte ...";
+    }
+    document.getElementById('message').innerHTML = html;
+});
+
+socket.on('refuse game', () =>{
+    waintingMessage.classList.add('d-none');
+
+})
+
+socket.on('accept game', ()=>{
+    waintingMessage.classList.add('d-none');
+});
+
