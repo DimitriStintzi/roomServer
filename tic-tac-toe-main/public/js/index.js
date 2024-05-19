@@ -86,7 +86,7 @@ socket.on('update player', (players)=>{
     players.forEach(player =>{
         html +=`<li class="list-group-item d-flex justify-content-between">${player.username}`
         if(player.host === true){ //Si l'utilisateur est hôte
-            html += `<i class="fa-regular fa-crown"></i>`;
+            html += `<i class="fa-regular fas fa-crown"></i>`;
         }
         html+=`</li>`;
     })
