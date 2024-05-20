@@ -1,51 +1,59 @@
-body{
+html, body {
+    height: 100%;
+    width: 100%;
     margin: 0;
     padding: 0;
-    background-size: cover;
-    background-image: url('https://static.vecteezy.com/system/resources/previews/036/078/641/non_2x/pixel-art-illustration-space-background-pixelated-space-space-galaxy-universe-background-pixelated-for-the-pixel-art-game-and-icon-for-website-and-video-game-old-school-retro-vector.jpg');
 }
 
-.card-header{
+body {
+    background-image: url('https://media.discordapp.net/attachments/1220006829916950610/1240271469095813190/Untitled_Artwork.png?ex=664c8bd1&is=664b3a51&hm=968a3e719d8da1b7a1c50a1f11bea846c825110eb361910860079441d0a88dc4&=&format=webp&quality=lossless&width=550&height=309');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+
+
+.card-header {
     color: #fff;
     background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQzOUj22lAXrCM3saH97yAYGaGwchevENM2dV6yWD_-g&s');
-    
 }
 
-.list-group-item{
+.list-group-item {
     color: #fff;
     background-image: url('https://wallpapers-clan.com/wp-content/uploads/2023/10/space-portal-galaxy-desktop-wallpaper-preview.jpg');
     background-size: cover;
     border: none;
 }
 
-.p-0{
+.p-0 {
     background: none;
 }
 
-.fa-regular{
+.fa-regular {
     background: none;
 }
 
-.player-cadre{
+.player-cadre {
     display: flex;
     flex-direction: column;
     align-items: center;
     background-image: url('https://wallpapers-clan.com/wp-content/uploads/2023/10/space-portal-galaxy-desktop-wallpaper-preview.jpg');
     background-size: cover;
-
 }
 
-.row{
+.row {
     align-items: center;
     justify-content: center;
 }
 
-.spinner-border{
+.spinner-border {
     margin: 1rem;
-    background:none;
+    background: none;
 }
 
-.darken{
+.darken {
     position: fixed;
     top: 0;
     left: 0;
@@ -55,8 +63,7 @@ body{
     z-index: -1;
 }
 
-
-.wainting-game{
+.wainting-game {
     z-index: 999;
     position: absolute;
     display: flex;
@@ -69,8 +76,7 @@ body{
     margin: auto;
 }
 
-
-.decision-btn{
+.decision-btn {
     width: 50%;
     display: flex;
     flex-direction: row;
@@ -78,30 +84,28 @@ body{
     margin-top: 20px;
 }
 
-
-.btn-refuse{
+.btn-refuse {
     color: #fff;
     background-color: #930000;
     border-color: #930000;
 }
 
-
-.btn-accept{
+.btn-accept {
     color: #fff;
     background-color: #199300;
     border-color: #199300;
 }
 
-.list-players{
+.list-players {
     width: 100%;
 }
 
- @media (max-width: 950px) {
-    .wainting-game{
+@media (max-width: 950px) {
+    .wainting-game {
         min-width: 80vw;
     }
 
-    .decision-btn{
+    .decision-btn {
         width: 100%;
     }
-} 
+}
