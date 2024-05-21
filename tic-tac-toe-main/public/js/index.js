@@ -28,6 +28,9 @@ const waitingMessage = document.getElementById('waiting-game');
 const acceptGame = document.getElementById('accept');
 const refuseGame = document.getElementById('refuse');
 
+const manette = document.getElementById('manette');
+const page = document.getElementById('page');
+
 socket.emit('get rooms');
 socket.on('list rooms', (rooms) => {
     let html = "";
@@ -36,9 +39,12 @@ socket.on('list rooms', (rooms) => {
         rooms.forEach(room => {
             html += `<li class="list-group-item d-flex justify-content-between">
                     <p class="p-0 m-0 flex-grow-1 fw-bold">Salon de ${room.players[0].username} (${room.players.length}/4)</p>`;
-            if (room.players.length !== 4) {
-                html+= `<button class="btn btn-sm btn-success join-room" data-room="${room.id}">Rejoindre</button>`;
-            }
+                if (room.players.length !== 4 && room.inGame === false) {
+                    html+= `<button class="btn btn-sm btn-success join-room" data-room="${room.id}">Rejoindre</button>`;
+                }
+                else if(room.inGame){
+                    html+= `<button class="btn btn-sm btn-refuse">En Jeu</button>`;
+                }
             html +=`</li>`;
 
         });
@@ -64,8 +70,11 @@ socket.on('update rooms', (rooms) => {
             rooms.forEach(room => {
                 html += `<li class="list-group-item d-flex justify-content-between">
                         <p class="p-0 m-0 flex-grow-1 fw-bold">Salon de ${room.players[0].username} (${room.players.length}/4)</p>`;
-                if (room.players.length !== 4) {
+                if (room.players.length !== 4 && room.inGame === false) {
                     html+= `<button class="btn btn-sm btn-success join-room" data-room="${room.id}">Rejoindre</button>`;
+                }
+                else if(room.inGame){
+                    html+= `<button class="btn btn-sm btn-refuse">En Jeu</button>`;
                 }
                 html +=`</li>`;    
             });
@@ -198,3 +207,10 @@ refuseGame.addEventListener('click', () => {
 acceptGame.addEventListener('click', () =>{
     socket.emit('accept game', player.roomId);
 })
+
+socket.on('display manette', ()=>{
+    page.classList.add('d-none');
+    manette.classList.remove('d-none');
+})
+
+

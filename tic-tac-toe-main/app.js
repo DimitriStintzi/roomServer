@@ -133,21 +133,35 @@ io.on('connection', (socket) => {
         rooms.forEach(r => {
             if(r.id === room){
                 const selectedroom = r;
+                r.inGame = true;
                 selectedroom.players.forEach(p =>{
                     html += `${p.username}|`
+                    io.to(p.socketId).emit('display manette');
                 });                
                 wss.clients.forEach((client) =>{
                     if(client.readyState == WebSocket.OPEN){
-                        client.send(JSON.stringify(`NBPlayers${selectedroom.players.length}`));
-                        client.send(JSON.stringify(html));
+                        client.send((`NBPlayers${selectedroom.players.length}`));
+                        client.send((html));
                     }
-                })
+                });
             }
             r.players.forEach(p =>{
                 io.to(p.socketId).emit('waiting ended');
-            })
-        });
+            });
 
+        });
+        io.emit('update rooms', rooms);
+
+    })
+
+    socket.on('mouvement', (mouvement, joueurId) =>{
+        let message = "";
+        wss.clients.forEach((client) =>{
+            if(client.readyState == WebSocket.OPEN){
+                message += `P${joueurId}_${mouvement}`;
+                client.send(message);
+            }
+        });
     })
 });
 
@@ -181,7 +195,7 @@ function disconnect_to_room(disconnectedPlayer, disconnectedRoom, socket){
 
 
 function createRoom(player) {
-    const room = { id: roomId(), players: [] };
+    const room = { id: roomId(), players: [] , inGame: false};
 
     player.roomId = room.id;
 
