@@ -1,22 +1,30 @@
-const { Socket } = require('socket.io');
-
 const express = require('express');
+const http = require('http');
+const WebSocket = require('ws');
+const path = require('path');
+const SocketIO = require('socket.io');
+const { stringify } = require('querystring');
 
 const app = express();
-const http = require('http').createServer(app);
-const path = require('path');
 const port = 8080;
-const ip = '192.168.1.29'
+const ip = '192.168.168.105';
 
-/**
- * @type {Socket}
- */
-const io = require('socket.io')(http);
+const server = http.createServer(app);
 
+const io = SocketIO(server);
+
+const wss = new WebSocket.Server({noServer : true, path:'/ws' });
+
+/** 
+*@type {Socket}
+*/
+
+// Configurer les chemins pour servir les fichiers statiques
 app.use('/bootstrap/css', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/css')));
 app.use('/bootstrap/js', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js')));
 app.use('/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'templates/socket.io')));
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
@@ -27,14 +35,11 @@ app.get('/index', (req, res) => {
     res.sendFile(path.join(__dirname, 'templates/index.html'));
 });
 
-http.listen(port, () => {
-    console.log(`Listening on https://${ip}:${port}`);
-});
-
 let rooms = [];
 
 io.on('connection', (socket) => {
     console.log(`[connection] ${socket.id}`);
+
     socket.on('playerData', (player) => {
         console.log(`[playerData] ${player.username}`);
 
@@ -110,6 +115,36 @@ io.on('connection', (socket) => {
             }
         })
     })
+
+    socket.on('refuse game', (room) =>{
+        rooms.forEach(r => {
+            if(r.id === room){
+                r.players.forEach(p =>{
+                    io.to(p.socketId).emit('waiting ended');
+                })
+            }
+        });
+    });
+
+    socket.on('accept game', (room) =>{
+        console.log(room);
+        rooms.forEach(r => {
+            if(r.id === room){
+                const selectedroom = r;
+                console.log(selectedroom.players);
+
+                wss.clients.forEach((client) =>{
+                    if(client.readyState == WebSocket.OPEN){
+                        client.send(JSON.stringify(`NBPlayers${selectedroom.players.length}`));
+                    }
+                })
+            }
+            r.players.forEach(p =>{
+                io.to(p.socketId).emit('waiting ended');
+            })
+        });
+
+    })
 });
 
 //-------------------------------------------//
@@ -155,3 +190,39 @@ function roomId() {
 }
 
 
+
+wss.on('connection', (ws)=>{
+    console.log("Unity connected");
+    
+    ws.on('message', function incoming(message, isBinary){
+        const mess = JSON.stringify(message)
+        console.log(mess)
+        if(mess === `"asking players"`){
+            rooms.forEach(r =>{
+                if(r.players.length > 1){
+                    r.players.forEach(p=>{
+                        io.to(p.socketId).emit('waiting players');
+                    })
+                }
+            })
+        }
+    });
+});
+
+
+// Handle upgrade requests
+server.on('upgrade', (request, socket, head) => {
+    const pathname = new URL(request.url, `http://${request.headers.host}`).pathname;
+  
+    if (pathname === '/ws') {
+      wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit('connection', ws, request);
+      });
+    } else {
+      socket.destroy();
+    }
+  });
+
+server.listen(port, ip, () => {
+    console.log(`Server is running on http://${ip}:${port}`);
+});

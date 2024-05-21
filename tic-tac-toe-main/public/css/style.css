@@ -3,6 +3,10 @@ html, body {
     width: 100%;
     margin: 0;
     padding: 0;
+    background-size:auto;
+    background-image: url('https://static.vecteezy.com/system/resources/previews/036/078/641/non_2x/pixel-art-illustration-space-background-pixelated-space-space-galaxy-universe-background-pixelated-for-the-pixel-art-game-and-icon-for-website-and-video-game-old-school-retro-vector.jpg');
+    background-color: #00000c;
+    background-repeat: no-repeat;
 }
 
 body {
@@ -14,17 +18,18 @@ body {
 }
 
 
-
+#rooms-card{
+    background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQzOUj22lAXrCM3saH97yAYGaGwchevENM2dV6yWD_-g&s');
+}
 .card-header {
     color: #fff;
+    border-bottom: 1px solid #fff;
     background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQzOUj22lAXrCM3saH97yAYGaGwchevENM2dV6yWD_-g&s');
 }
 
 .list-group-item {
     color: #fff;
-    background-image: url('https://wallpapers-clan.com/wp-content/uploads/2023/10/space-portal-galaxy-desktop-wallpaper-preview.jpg');
-    background-size: cover;
-    border: none;
+    background: none;
 }
 
 .p-0 {
@@ -63,7 +68,7 @@ body {
     z-index: -1;
 }
 
-.wainting-game {
+.waiting-game {
     z-index: 999;
     position: absolute;
     display: flex;
@@ -101,7 +106,7 @@ body {
 }
 
 @media (max-width: 950px) {
-    .wainting-game {
+    .waiting-game {
         min-width: 80vw;
     }
 

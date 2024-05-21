@@ -23,8 +23,8 @@ const spin = document.getElementById('spinner');
 const roomsCard = document.getElementById('rooms-card');
 const roomsList = document.getElementById('rooms-list');
 const playerList = document.getElementById('players-list');
-const disconnect_btn = document.getElementById('disconect-player');
-const waintingMessage = document.getElementById('wainting-game');
+const disconnect_btn = document.getElementById('disconnect-player');
+const waitingMessage = document.getElementById('waiting-game');
 const acceptGame = document.getElementById('accept');
 const refuseGame = document.getElementById('refuse');
 
@@ -167,8 +167,8 @@ const joinRoom = function () {
 
 
 // ------ Jouabilité
-socket.on('wainting players', () =>{
-    waintingMessage.classList.remove('d-none');
+socket.on('waiting players', () =>{
+    waitingMessage.classList.remove('d-none');
     let html ="";
     if(player.host === true){
         html += "Invitation à une partie";
@@ -181,12 +181,18 @@ socket.on('wainting players', () =>{
     document.getElementById('message').innerHTML = html;
 });
 
-socket.on('refuse game', () =>{
-    waintingMessage.classList.add('d-none');
-
+socket.on('waiting ended', () =>{
+    waitingMessage.classList.add('d-none');
+    if(player.host === true){
+        refuseGame.classList.add('d-none');
+        acceptGame.classList.add('d-none');
+    }
 })
 
-socket.on('accept game', ()=>{
-    waintingMessage.classList.add('d-none');
-});
+refuseGame.addEventListener('click', () => {
+    socket.emit('refuse game', player.roomId);
+})
 
+acceptGame.addEventListener('click', () =>{
+    socket.emit('accept game', player.roomId);
+})
