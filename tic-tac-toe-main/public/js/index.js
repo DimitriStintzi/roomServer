@@ -84,7 +84,8 @@ socket.on('update rooms', (rooms) => {
 socket.on('update player', (players)=>{
     let html ="";
     players.forEach(player =>{
-        html +=`<li class="list-group-item d-flex justify-content-between">${player.username}`
+        player.playerId = players.indexOf(player)+1;
+        html +=`<li class="list-group-item d-flex justify-content-between">${player.playerId} - ${player.username}`
         if(player.host === true){ //Si l'utilisateur est hôte
             html += `<i class="fa-regular fas fa-crown"></i>`;
         }
@@ -120,8 +121,9 @@ $("#form").on('submit', function (e) {
 });
 // ------- Room interaction avec joueurs 
 //Connexion à une room
-socket.on('join room', (roomId) => {
-    player.roomId = roomId;
+socket.on('join room', (room) => {
+    player.roomId = room.id;
+    player.playerId = room.players.length;
 
 });
 

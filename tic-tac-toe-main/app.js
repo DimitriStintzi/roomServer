@@ -4,6 +4,7 @@ const WebSocket = require('ws');
 const path = require('path');
 const SocketIO = require('socket.io');
 const { stringify } = require('querystring');
+const { json } = require('stream/consumers');
 
 const app = express();
 const port = 8080;
@@ -60,8 +61,8 @@ io.on('connection', (socket) => {
         }
 
         socket.join(room.id);
-        io.to(socket.id).emit('join room', room.id);
-
+        io.to(socket.id).emit('join room', room);
+        player.playerId = room.players.length;
         io.to(room.id).emit('update player', room.players);
 
         io.emit('update rooms', rooms);
@@ -128,14 +129,17 @@ io.on('connection', (socket) => {
 
     socket.on('accept game', (room) =>{
         console.log(room);
+        let html ="usernames|";
         rooms.forEach(r => {
             if(r.id === room){
                 const selectedroom = r;
-                console.log(selectedroom.players);
-
+                selectedroom.players.forEach(p =>{
+                    html += `${p.username}|`
+                });                
                 wss.clients.forEach((client) =>{
                     if(client.readyState == WebSocket.OPEN){
                         client.send(JSON.stringify(`NBPlayers${selectedroom.players.length}`));
+                        client.send(JSON.stringify(html));
                     }
                 })
             }
@@ -167,6 +171,9 @@ function disconnect_to_room(disconnectedPlayer, disconnectedRoom, socket){
         rooms = rooms.filter(room => room.id !== disconnectedRoom.id); //Supression de la room si il ne reste plus de joueurs
     }
     else{ // Sinon on uptade la liste des joueurs
+        disconnectedRoom.players.forEach(p =>{
+            p.playerId = disconnectedRoom.players.indexOf(p) +1;
+        });
         io.to(disconnectedRoom.id).emit('update player', disconnectedRoom.players);
     }
     io.emit('update rooms', rooms);
