@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    <div class="container mt-5" id="page">
+    <div class="container mt-5 d-none" id="page">
         <div class="row">
             <div class="col-sm-12 col-md-6 ">
                 <div class="card mb-3" id="user-card">
@@ -70,22 +70,21 @@
         </div>
     </div>
 
-    <div class="manette d-none" id="manette">
-        <div class="container py-5">
-            <div class="row">
-                <div class="col-4 offset-4">
-                    <div id="d-pad">
-                        <button id="up" class="button"></button>
-                        <button id="right" class="button"></button>
-                        <button id="down" class="button"></button>
-                        <button id="left" class="button"></button>
-                        <div id="buttons">
-                            <button id="A" class="buttons">A</button>
-                            <button id="B" class="buttons">B</button>
-                        </div>
-                    </div>
+    <div class="manette" id="manette">
+        <div class="container-controller">
+                <div class="keys right-left">
+                    <button id="left" class="button"></button>
+                    <button id="right" class="button"></button>
+
                 </div>
-            </div>
+                <div class="keys power-up">
+                    <button id="A" class="buttons">A</button>
+                    <button id="B" class="buttons">B</button>
+                </div>
+                <div class="keys up-down">
+                    <button id="up" class="button"></button>
+                    <button id="down" class="button"></button>    
+                </div>
         </div>
     </div>
 
