@@ -12,6 +12,22 @@ const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const roomId = urlParams.get('room');
 
+
+//Ajoutez une écoute de l'événement startGame pour afficher les manettes lorsque 4 joueurs sont dans la salle.
+
+document.getElementById('form').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const username = document.getElementById('username').value;
+    socket.emit('joinRoom', 'someRoom');
+});
+
+socket.on('startGame', () => {
+    document.querySelector('.manette').classList.remove('d-none');
+});
+
+
+
+
 if (roomId) {
     document.getElementById('start').innerText = "Rejoindre";
 }
@@ -214,3 +230,50 @@ socket.on('display manette', ()=>{
 })
 
 
+
+//------------------------------------------//
+//--------- Fonctionnement manette ---------//
+//------------------------------------------//
+
+const jumpbtn = document.getElementById('up');
+const left = document.getElementById('left');
+const right = document.getElementById('right');
+const down = document.getElementById('down');
+const wsEcran = document.getElementById('plein_ecran_btn');
+
+function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+}
+
+function handlePointerDown(button, message) {
+    button.onpointerdown = () => {
+        sendMessage(message + 'Down');
+    };
+}
+
+function handlePointerUp(button, message) {
+    button.onpointerup = () => {
+        sendMessage(message + 'Up');
+    };
+    button.onpointerleave = () => {
+        sendMessage(message + 'Up');
+    };
+    button.onpointercancel = () => {
+        sendMessage(message + 'Up');
+    };
+}
+
+handlePointerDown(jumpbtn, 'Jump');
+    handlePointerUp(jumpbtn, 'Jump');
+    handlePointerDown(left, 'Left');
+    handlePointerUp(left, 'Left');
+    handlePointerDown(right, 'Right');
+    handlePointerUp(right, 'Right');
+    handlePointerDown(down, 'Down');
+    handlePointerUp(down, 'Down');

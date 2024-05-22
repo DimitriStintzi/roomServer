@@ -3,22 +3,18 @@ const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
 const SocketIO = require('socket.io');
-const { stringify } = require('querystring');
-const { json } = require('stream/consumers');
 
 const app = express();
 const port = 8080;
-const ip = '192.168.168.105';
+const ip = 'localhost';
 
 const server = http.createServer(app);
-
 const io = SocketIO(server);
+const wss = new WebSocket.Server({ noServer: true, path: '/ws' });
 
-const wss = new WebSocket.Server({noServer : true, path:'/ws' });
+let rooms = [];
 
-/** 
-*@type {Socket}
-*/
+
 
 // Configurer les chemins pour servir les fichiers statiques
 app.use('/bootstrap/css', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/css')));
@@ -36,8 +32,6 @@ app.get('/index', (req, res) => {
     res.sendFile(path.join(__dirname, 'templates/index.html'));
 });
 
-let rooms = [];
-
 io.on('connection', (socket) => {
     console.log(`[connection] ${socket.id}`);
 
@@ -48,7 +42,7 @@ io.on('connection', (socket) => {
 
         if (!player.roomId) {
             room = createRoom(player);
-            console.log(`[create room ] - ${room.id} - ${player.username}`);
+            console.log(`[create room] - ${room.id} - ${player.username}`);
         } else {
             room = rooms.find(r => r.id === player.roomId);
 
@@ -68,65 +62,60 @@ io.on('connection', (socket) => {
         io.emit('update rooms', rooms);
 
         if (room.players.length === 4) {
-            io.to(room.id).emit('full');
+            //io.to(room.id).emit('full'); //normalement 'full'
+            io.in(room.id).emit('startGame');
         }
     });
 
-    
     socket.on('get rooms', () => {
         io.to(socket.id).emit('list rooms', rooms);
     });
 
-//----- Déconnexions -----//
+    //----- Déconnexions -----//
 
-// Clic sur le bouton déconnexion
-    socket.on('disconect player', (player) => {
-        let disconnectedRoom = null;
-        let disconnectedPlayer = null;
-        disconnectedRoom = rooms.find(r => r.id === player.roomId);
-        disconnectedPlayer = player;
-    
-        if (disconnectedPlayer && disconnectedRoom) {
-            disconnect_to_room(disconnectedPlayer, disconnectedRoom, socket);
-        } 
+    // Clic sur le bouton déconnexion
+    socket.on('disconnect player', (player) => {
+        let disconnectedRoom = rooms.find(r => r.id === player.roomId);
+
+        if (disconnectedRoom) {
+            disconnectPlayerFromRoom(player, disconnectedRoom, socket);
+        }
     });
-    
 
-// Déconnexion par refresh de la page
+    // Déconnexion par refresh de la page
     socket.on('disconnect', () => {
         console.log(`[disconnect] ${socket.id}`);
         rooms.forEach(r => {
             r.players.forEach(p => {
                 if (p.socketId === socket.id) {
-                    disconnect_to_room(p,r, socket);
+                    disconnectPlayerFromRoom(p, r, socket);
                 }
-            })
-        })
+            });
+        });
     });
 
     //------------------------------------------------//
     //-------- Communication Unity et joueurs --------//
     //------------------------------------------------//
-    socket.on('asking players', ()=>{
-        rooms.forEach(r =>{
-            if(r.players.length > 1){
-                r.players.forEach(p=>{
-                    io.to(p.socketId).emit('waiting players');
-                })
-            }
-        })
-    })
-
-    socket.on('refuse game', (room) =>{
+    socket.on('asking players', () => {
         rooms.forEach(r => {
-            if(r.id === room){
-                r.players.forEach(p =>{
-                    io.to(p.socketId).emit('waiting ended');
-                })
+            if (r.players.length > 1) {
+                r.players.forEach(p => {
+                    io.to(p.socketId).emit('waiting players');
+                });
             }
         });
     });
 
+    socket.on('refuse game', (roomId) => {
+        const room = rooms.find(r => r.id === roomId);
+        if (room) {
+            room.players.forEach(p => {
+                io.to(p.socketId).emit('waiting ended');
+            });
+        }
+    });
+    
     socket.on('accept game', (room) =>{
         console.log(room);
         let html ="usernames|";
@@ -169,39 +158,35 @@ io.on('connection', (socket) => {
 //---------------- Fonctions ----------------//
 //-------------------------------------------//
 
-// Deconnexion du joueur 
-function disconnect_to_room(disconnectedPlayer, disconnectedRoom, socket){
-    if(disconnectedPlayer.host === true){  //Transfert du role d'hôte si l'hôte a quitté la partie
-        if(disconnectedRoom.players[1]){
+// Déconnexion du joueur 
+function disconnectPlayerFromRoom(disconnectedPlayer, disconnectedRoom, socket) {
+    if (disconnectedPlayer.host === true) { // Transfert du rôle d'hôte si l'hôte a quitté la partie
+        if (disconnectedRoom.players[1]) {
             disconnectedRoom.players[1].host = true;
-            console.log(`[Transfert host] - ${disconnectedPlayer.username} -> ${disconnectedRoom.players[1].username}`)
+            console.log(`[Transfert host] - ${disconnectedPlayer.username} -> ${disconnectedRoom.players[1].username}`);
             io.to(disconnectedRoom.players[1].socketId).emit('new host');
         }
     }
-    disconnectedRoom.players = disconnectedRoom.players.filter(player => player.socketId !== socket.id); //Supression du joueur
+    disconnectedRoom.players = disconnectedRoom.players.filter(player => player.socketId !== socket.id); // Suppression du joueur
     io.to(socket.id).emit('leave room');
 
-    if(disconnectedRoom.players.length === 0){
-        rooms = rooms.filter(room => room.id !== disconnectedRoom.id); //Supression de la room si il ne reste plus de joueurs
-    }
-    else{ // Sinon on uptade la liste des joueurs
-        disconnectedRoom.players.forEach(p =>{
-            p.playerId = disconnectedRoom.players.indexOf(p) +1;
+    if (disconnectedRoom.players.length === 0) {
+        rooms = rooms.filter(room => room.id !== disconnectedRoom.id); // Suppression de la room s'il ne reste plus de joueurs
+    } else { // Sinon on update la liste des joueurs
+        disconnectedRoom.players.forEach(p => {
+            p.playerId = disconnectedRoom.players.indexOf(p) + 1;
         });
         io.to(disconnectedRoom.id).emit('update player', disconnectedRoom.players);
     }
     io.emit('update rooms', rooms);
 }
 
-
 function createRoom(player) {
     const room = { id: roomId(), players: [] , inGame: false};
 
     player.roomId = room.id;
-
     room.players.push(player);
     rooms.push(room);
-    
 
     return room;
 }
@@ -210,40 +195,39 @@ function roomId() {
     return Math.random().toString(36).substr(2, 9);
 }
 
-
-
-wss.on('connection', (ws)=>{
+wss.on('connection', (ws) => {
     console.log("Unity connected");
-    
-    ws.on('message', function incoming(message, isBinary){
-        const mess = JSON.stringify(message)
-        console.log(mess)
-        if(mess === `"asking players"`){
-            rooms.forEach(r =>{
-                if(r.players.length > 1){
-                    r.players.forEach(p=>{
+
+    ws.on('message', function incoming(message) {
+        const mess = message.toString();
+        console.log(mess);
+        if (mess === "asking players") {
+            rooms.forEach(r => {
+                if (r.players.length > 1) {
+                    r.players.forEach(p => {
                         io.to(p.socketId).emit('waiting players');
-                    })
+                    });
                 }
-            })
+            });
         }
     });
 });
 
-
 // Handle upgrade requests
 server.on('upgrade', (request, socket, head) => {
     const pathname = new URL(request.url, `http://${request.headers.host}`).pathname;
-  
+
     if (pathname === '/ws') {
-      wss.handleUpgrade(request, socket, head, (ws) => {
-        wss.emit('connection', ws, request);
-      });
+        wss.handleUpgrade(request, socket, head, (ws) => {
+            wss.emit('connection', ws, request);
+        });
     } else {
-      socket.destroy();
+        socket.destroy();
     }
-  });
+});
 
 server.listen(port, ip, () => {
     console.log(`Server is running on http://${ip}:${port}`);
 });
+
+
