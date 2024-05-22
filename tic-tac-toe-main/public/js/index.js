@@ -211,6 +211,57 @@ acceptGame.addEventListener('click', () =>{
 socket.on('display manette', ()=>{
     page.classList.add('d-none');
     manette.classList.remove('d-none');
+    toggleFullScreen();
 })
+//-------------------------------------------------------//
+//--------------- Fonctionnement manettes ---------------//
+//-------------------------------------------------------//
 
+const up = document.getElementById('up');
+const left = document.getElementById('left');
+const right = document.getElementById('right');
+const down = document.getElementById('down');
+const A = document.getElementById('A');
+const B = document.getElementById('B'); 
 
+function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+}
+
+function handlePointerDown(button, message) {
+    button.onpointerdown = () => {
+        socket.emit('mouvement' ,`${message}Pressed`,player.playerId);
+        console.log(message);
+    };
+}
+
+function handlePointerUp(button, message) {
+    button.onpointerup = () => {
+        socket.emit('mouvement', `${message}Released`,player.playerId);
+    };
+    button.onpointerleave = () => {
+        socket.emit('mouvement',`${message}Released`,player.playerId);
+    };
+    button.onpointercancel = () => {
+        socket.emit('mouvement',`${message}Released`,player.playerId);
+    };
+}
+
+handlePointerDown(up, 'Up');
+handlePointerUp(up, 'Up');
+handlePointerDown(left, 'Left');
+handlePointerUp(left, 'Left');
+handlePointerDown(right, 'Right');
+handlePointerUp(right, 'Right');
+handlePointerDown(down, 'Down');
+handlePointerUp(down, 'Down');
+handlePointerUp(A, 'A');
+handlePointerDown(A, 'A');
+handlePointerUp(B, 'B');
+handlePointerDown(B,'B');

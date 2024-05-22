@@ -3,12 +3,10 @@ const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
 const SocketIO = require('socket.io');
-const { stringify } = require('querystring');
-const { json } = require('stream/consumers');
 
 const app = express();
 const port = 8080;
-const ip = '192.168.168.105';
+const ip = '192.168.220.105';
 
 const server = http.createServer(app);
 
@@ -109,7 +107,7 @@ io.on('connection', (socket) => {
     //------------------------------------------------//
     socket.on('asking players', ()=>{
         rooms.forEach(r =>{
-            if(r.players.length > 1){
+            if(r.players.length > 0){
                 r.players.forEach(p=>{
                     io.to(p.socketId).emit('waiting players');
                 })
@@ -160,7 +158,9 @@ io.on('connection', (socket) => {
             if(client.readyState == WebSocket.OPEN){
                 message += `P${joueurId}_${mouvement}`;
                 client.send(message);
+                // console.log(message);
             }
+
         });
     })
 });
