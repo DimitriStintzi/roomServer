@@ -172,8 +172,6 @@ img{
 #up {
     border-width: 5vh 15vh 25vh 15vh;
     border-color: transparent transparent red transparent;
-    /* top: 13vh;
-    right: 25vh; */
     background-color: rgba(26, 26, 26, 0.884);
     border-radius: 40% 40% 10% 10%;
     box-shadow: 0px 0px 0px 6px rgba(0, 0, 0, 0.5);
@@ -237,9 +235,32 @@ img{
 
 }
 
-@media screen and (max-width: 375) {
-    
+@media screen and (max-width: 800px) and (max-height: 375px){
+    #up{
+        border-width: 2.5vh 12.5vh 22.5vh 12.5vh;
+    }
+    #down{
+        border-width: 22.5vh 12.5vh 2.5vh 12.5vh;
+    }
+    #left{
+        border-width: 12.5vh 22.5vh 12.5vh 2.5vh;
+    }
+    #right{
+        border-width: 12.5vh 2.5vh 12.5vh 22.5vh;
+    }
 }
-@media screen {
-    
+
+@media (max-width: 550px) and (max-height: 335px){
+    #up{
+        border-width: 0 10vh 20vh 10vh;
+    }
+    #down{
+        border-width: 20vh 10vh 0 10vh;
+    }
+    #left{
+        border-width: 10vh 20vh 10vh 0;
+    }
+    #right{
+        border-width: 10vh 0 10vh 20vh;
+    }
 }
