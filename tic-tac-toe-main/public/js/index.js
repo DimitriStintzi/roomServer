@@ -212,6 +212,8 @@ socket.on('display manette', ()=>{
     page.classList.add('d-none');
     manette.classList.remove('d-none');
     toggleFullScreen();
+    updateManetteBackground(playerId);
+
 })
 //-------------------------------------------------------//
 //--------------- Fonctionnement manettes ---------------//
@@ -265,3 +267,17 @@ handlePointerUp(A, 'A');
 handlePointerDown(A, 'A');
 handlePointerUp(B, 'B');
 handlePointerDown(B,'B');
+
+
+function updateManetteBackground(playerId) {
+    // Retirer les classes existantes
+    manette.classList.remove('player-1', 'player-2', 'player-3', 'player-4');
+    // Ajouter la nouvelle classe
+    manette.classList.add(`player-${playerId}`);
+}
+
+socket.on('join room', (room) => {
+    player.roomId = room.id;
+    player.playerId = room.players.length;
+    updateManetteBackground(player.playerId);
+});

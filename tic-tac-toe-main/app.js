@@ -6,7 +6,7 @@ const SocketIO = require('socket.io');
 
 const app = express();
 const port = 8080;
-const ip = '192.168.220.105';
+const ip = 'localhost';
 
 const server = http.createServer(app);
 
