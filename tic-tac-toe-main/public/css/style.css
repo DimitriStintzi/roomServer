@@ -157,6 +157,21 @@ img{
 
 
 
+.turn-alert{
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 12, 0.5);
+}
+
+.turn-alert p{
+    color: white;
+    background-color: #3b3b3b;
+    font-size: 1.5em;
+}
 
 .buttons {
     width: 25vh;
@@ -270,5 +285,11 @@ img{
     }
     #right{
         border-width: 10vh 0 10vh 20vh;
+    }
+}
+
+@media screen and (orientation: landscape){
+    .turn-alert{
+        display: none;
     }
 }

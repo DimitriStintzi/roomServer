@@ -6,7 +6,7 @@ const SocketIO = require('socket.io');
 
 const app = express();
 const port = 8080;
-const ip = 'localhost';
+const ip = '192.168.18.105';
 
 const server = http.createServer(app);
 
@@ -158,7 +158,8 @@ io.on('connection', (socket) => {
             if(client.readyState == WebSocket.OPEN){
                 message += `P${joueurId}_${mouvement}`;
                 client.send(message);
-                // console.log(message);
+                
+                console.log(message);
             }
 
         });
