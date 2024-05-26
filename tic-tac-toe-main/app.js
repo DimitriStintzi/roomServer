@@ -6,7 +6,9 @@ const SocketIO = require('socket.io');
 
 const app = express();
 const port = 8080;
-const ip = '192.168.18.105';
+const ip = 'localhost';
+// const ip = '192.168.18.105';
+
 
 const server = http.createServer(app);
 
@@ -37,6 +39,7 @@ app.get('/index', (req, res) => {
 let rooms = [];
 
 io.on('connection', (socket) => {
+    io.to(socket.id).emit('back to home');
     console.log(`[connection] ${socket.id}`);
 
     socket.on('playerData', (player) => {
@@ -105,15 +108,6 @@ io.on('connection', (socket) => {
     //------------------------------------------------//
     //-------- Communication Unity et joueurs --------//
     //------------------------------------------------//
-    socket.on('asking players', ()=>{
-        rooms.forEach(r =>{
-            if(r.players.length > 0){
-                r.players.forEach(p=>{
-                    io.to(p.socketId).emit('waiting players');
-                })
-            }
-        })
-    })
 
     socket.on('refuse game', (room) =>{
         rooms.forEach(r => {
@@ -129,6 +123,9 @@ io.on('connection', (socket) => {
         console.log(room);
         let html ="usernames|";
         rooms.forEach(r => {
+            r.players.forEach(p =>{
+                io.to(p.socketId).emit('waiting ended');
+            });
             if(r.id === room){
                 const selectedroom = r;
                 r.inGame = true;
@@ -143,13 +140,10 @@ io.on('connection', (socket) => {
                     }
                 });
             }
-            r.players.forEach(p =>{
-                io.to(p.socketId).emit('waiting ended');
-            });
+
 
         });
         io.emit('update rooms', rooms);
-
     })
 
     socket.on('mouvement', (mouvement, joueurId) =>{
@@ -221,6 +215,12 @@ wss.on('connection', (ws)=>{
         console.log(mess)
         if(mess === `"asking players"`){
             rooms.forEach(r =>{
+                if(r.inGame === true){
+                    r.players.forEach(p =>{
+                        io.to(p.socketId).emit('undisplay manette');
+                    })
+                    r.inGame = false;
+                }
                 if(r.players.length > 1){
                     r.players.forEach(p=>{
                         io.to(p.socketId).emit('waiting players');

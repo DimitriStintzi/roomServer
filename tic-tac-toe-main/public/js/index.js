@@ -27,9 +27,9 @@ const disconnect_btn = document.getElementById('disconnect-player');
 const waitingMessage = document.getElementById('waiting-game');
 const acceptGame = document.getElementById('accept');
 const refuseGame = document.getElementById('refuse');
-
 const manette = document.getElementById('manette');
 const page = document.getElementById('page');
+
 
 socket.emit('get rooms');
 socket.on('list rooms', (rooms) => {
@@ -60,6 +60,10 @@ socket.on('list rooms', (rooms) => {
 });
 
 socket.on('update rooms', (rooms) => {
+    updateRooms(rooms);
+});
+
+function updateRooms(rooms){
     if(!player.roomId){
         if(rooms.length === 0){
             roomsCard.classList.add('d-none');
@@ -79,16 +83,16 @@ socket.on('update rooms', (rooms) => {
                 html +=`</li>`;    
             });
     
-        if (html !== "") {
-            roomsList.innerHTML = html;
+            if (html !== "") {
+                roomsList.innerHTML = html;
     
-            for (const element of document.getElementsByClassName('join-room')) {
-                element.addEventListener('click', joinRoom, false)
+                for (const element of document.getElementsByClassName('join-room')) {
+                    element.addEventListener('click', joinRoom, false)
+                }
             }
-        }
-    }
-    }
-});
+        };
+    };
+};
 
 socket.on('update player', (players)=>{
     let html ="";
@@ -206,14 +210,29 @@ refuseGame.addEventListener('click', () => {
 
 acceptGame.addEventListener('click', () =>{
     socket.emit('accept game', player.roomId);
+
 })
 
 socket.on('display manette', ()=>{
     page.classList.add('d-none');
     manette.classList.remove('d-none');
     toggleFullScreen();
-    updateManetteBackground(playerId);
+    updateManetteBackground(player.playerId);
 
+})
+
+socket.on('undisplay manette', ()=>{
+    page.classList.remove('d-none');
+    manette.classList.add('d-none');
+})
+
+socket.on('back to home', ()=>{
+    if(!manette.classList.contains('d-none')){
+        location.reload();
+    }
+    else if(!waitingArea.classList.contains('d-none')){
+        location.reload();
+    }
 })
 //-------------------------------------------------------//
 //--------------- Fonctionnement manettes ---------------//
@@ -228,10 +247,25 @@ const B = document.getElementById('B');
 
 function toggleFullScreen() {
     if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
+        let elem = document.documentElement; // The entire page
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.mozRequestFullScreen) { // Firefox
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) { // Chrome, Safari, Opera
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { // IE/Edge
+            elem.msRequestFullscreen();
+        };
     } else {
         if (document.exitFullscreen) {
             document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) { // Firefox
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) { // Chrome, Safari, Opera
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { // IE/Edge
+            document.msExitFullscreen();
         }
     }
 }

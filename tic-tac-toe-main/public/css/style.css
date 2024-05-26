@@ -10,11 +10,17 @@ html, body {
 }
 
 body {
-    background-image: url('https://media.discordapp.net/attachments/1220006829916950610/1240271469095813190/Untitled_Artwork.png?ex=664c8bd1&is=664b3a51&hm=968a3e719d8da1b7a1c50a1f11bea846c825110eb361910860079441d0a88dc4&=&format=webp&quality=lossless&width=550&height=309');
+    /* background-image: url('https://media.discordapp.net/attachments/1220006829916950610/1240271469095813190/Untitled_Artwork.png?ex=664c8bd1&is=664b3a51&hm=968a3e719d8da1b7a1c50a1f11bea846c825110eb361910860079441d0a88dc4&=&format=webp&quality=lossless&width=550&height=309'); */
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
+
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* Internet Explorer/Edge */
+    user-select: none;         /* Non-prefixed version, currently supported by Chrome and Opera */
+    -webkit-touch-callout: none; /* iOS Safari */
 }
 
 
@@ -140,7 +146,7 @@ img{
 }
 
 .manette.player-1 {
-    background-color: #e2063d; /* Background for player 1 */
+    background-color: rgb(80, 0, 0); /* Background for player 1 */
 }
 
 .manette.player-2 {
@@ -148,11 +154,11 @@ img{
 }
 
 .manette.player-3 {
-    background-color: #199300; /* Background for player 3 */
+    background-color: #136902; /* Background for player 3 */
 }
 
 .manette.player-4 {
-    background-color: #9823af; /* Background for player 4 */
+    background-color: rgb(70, 39, 76); /* Background for player 4 */
 }
 
 
