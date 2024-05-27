@@ -146,19 +146,21 @@ img{
 }
 
 .manette.player-1 {
-    background-color: rgb(80, 0, 0); /* Background for player 1 */
+    background-color: rgb(161, 14, 18); /* Background for player 1 */
 }
 
 .manette.player-2 {
-    background-color: rgb(9, 105, 150); /* Background for player 2 */
+    background-color: rgb(67, 146, 210); /* Background for player 2 */
+
 }
 
 .manette.player-3 {
-    background-color: #136902; /* Background for player 3 */
+    background-color: rgb(40, 107, 36); /* Background for player 3 */
+
 }
 
 .manette.player-4 {
-    background-color: rgb(70, 39, 76); /* Background for player 4 */
+    background-color: rgb(69, 34, 98); /* Background for player 4 */
 }
 
 
@@ -200,7 +202,7 @@ img{
 
 #up {
     border-width: 5vh 15vh 25vh 15vh;
-    border-color: transparent transparent red transparent;
+    border-color: transparent transparent rgb(255, 255, 255) transparent;
     background-color: rgba(26, 26, 26, 0.884);
     border-radius: 40% 40% 10% 10%;
     box-shadow: 0px 0px 0px 6px rgba(0, 0, 0, 0.5);
@@ -208,7 +210,7 @@ img{
 
 #right {
     border-width: 15vh 5vh 15vh 25vh;
-    border-color: transparent transparent transparent red;
+    border-color: transparent transparent transparent rgb(255, 255, 255);
     background-color: rgba(26, 26, 26, 0.884);
     border-radius: 10% 40% 40% 10%;
     box-shadow: 0px 0px 0px 6px rgba(0, 0, 0, 0.5);
@@ -216,7 +218,7 @@ img{
 
 #down {
     border-width: 25vh 15vh 5vh 15vh;
-    border-color: red transparent transparent transparent;
+    border-color: rgb(255, 255, 255) transparent transparent transparent;
     background-color: rgba(26, 26, 26, 0.884);
     border-radius: 10% 10% 40% 40%;
     box-shadow: 0px 0px 0px 6px rgba(0, 0, 0, 0.5);
@@ -224,7 +226,7 @@ img{
 
 #left {
     border-width: 15vh 25vh 15vh 5vh;
-    border-color: transparent red transparent transparent;
+    border-color: transparent rgb(255, 255, 255) transparent transparent;
     background-color: rgba(26, 26, 26, 0.884);
     border-radius: 40% 10% 10% 40%;
     box-shadow: 0px 0px 0px 6px rgba(0, 0, 0, 0.5);

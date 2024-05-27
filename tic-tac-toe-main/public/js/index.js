@@ -15,7 +15,7 @@ const roomId = urlParams.get('room');
 if (roomId) {
     document.getElementById('start').innerText = "Rejoindre";
 }
-
+// Définition dee tous les éléments
 const usernameInput = document.getElementById('username');
 const userCard = document.getElementById('user-card');
 const waitingArea = document.getElementById('waiting-area');
@@ -30,8 +30,10 @@ const refuseGame = document.getElementById('refuse');
 const manette = document.getElementById('manette');
 const page = document.getElementById('page');
 
-
+//Envoi de la requête des rooms
 socket.emit('get rooms');
+
+//Récupération des rooms
 socket.on('list rooms', (rooms) => {
     let html = "";
     if (rooms.length > 0) {
@@ -59,6 +61,7 @@ socket.on('list rooms', (rooms) => {
     }
 });
 
+// Mise à jour des rooms
 socket.on('update rooms', (rooms) => {
     updateRooms(rooms);
 });
@@ -94,6 +97,7 @@ function updateRooms(rooms){
     };
 };
 
+// Mise à jour
 socket.on('update player', (players)=>{
     let html ="";
     players.forEach(player =>{
@@ -107,11 +111,12 @@ socket.on('update player', (players)=>{
     playerList.innerHTML = html;
 });
 
+// Attribution de l'hôte
 socket.on('new host',() => {
     player.host = true;
 })
 
-
+// Créer ou rejoindre une room
 
 $("#form").on('submit', function (e) {
     e.preventDefault();
@@ -132,6 +137,8 @@ $("#form").on('submit', function (e) {
 
     socket.emit('playerData', player);
 });
+
+
 // ------- Room interaction avec joueurs 
 //Connexion à une room
 socket.on('join room', (room) => {

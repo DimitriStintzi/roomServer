@@ -6,8 +6,8 @@ const SocketIO = require('socket.io');
 
 const app = express();
 const port = 8080;
-const ip = 'localhost';
-// const ip = '192.168.18.105';
+// const ip = 'localhost';
+const ip = '192.168.227.105';
 
 
 const server = http.createServer(app);
@@ -38,10 +38,21 @@ app.get('/index', (req, res) => {
 
 let rooms = [];
 
+
+//----------------------------------------------//
+//----------------------------------------------//
+//----------- Partie Serveur SocketIO ----------//
+//----------------------------------------------//
+//----------------------------------------------//
+
 io.on('connection', (socket) => {
+
+    //On renvoit le joueur à la page d'accueil lors d'une reconnexion
     io.to(socket.id).emit('back to home');
     console.log(`[connection] ${socket.id}`);
 
+
+    //Entrée du pseudo d'un joueur    
     socket.on('playerData', (player) => {
         console.log(`[playerData] ${player.username}`);
 
@@ -64,21 +75,22 @@ io.on('connection', (socket) => {
         socket.join(room.id);
         io.to(socket.id).emit('join room', room);
         player.playerId = room.players.length;
-        io.to(room.id).emit('update player', room.players);
+        io.to(room.id).emit('update player', room.players); //Update de la room pour tous les autres joueurs
 
-        io.emit('update rooms', rooms);
+        io.emit('update rooms', rooms); //Update de la liste des rooms pour tous les autres joueurs
 
         if (room.players.length === 4) {
             io.to(room.id).emit('full');
         }
     });
 
-    
+    // Affichage des rooms
     socket.on('get rooms', () => {
         io.to(socket.id).emit('list rooms', rooms);
     });
 
-//----- Déconnexions -----//
+
+//---------- Déconnexions ----------//
 
 // Clic sur le bouton déconnexion
     socket.on('disconect player', (player) => {
@@ -105,20 +117,13 @@ io.on('connection', (socket) => {
         })
     });
 
-    //------------------------------------------------//
-    //-------- Communication Unity et joueurs --------//
-    //------------------------------------------------//
+//------------------------------------------------//
+//------------------------------------------------//
+//-------- Communication Unity et joueurs --------//
+//------------------------------------------------//
+//------------------------------------------------//
 
-    socket.on('refuse game', (room) =>{
-        rooms.forEach(r => {
-            if(r.id === room){
-                r.players.forEach(p =>{
-                    io.to(p.socketId).emit('waiting ended');
-                })
-            }
-        });
-    });
-
+    //Acceptation de l'invitation à une partie -> affichage des manettes
     socket.on('accept game', (room) =>{
         console.log(room);
         let html ="usernames|";
@@ -144,8 +149,21 @@ io.on('connection', (socket) => {
 
         });
         io.emit('update rooms', rooms);
-    })
+    });
 
+    // Refus de l'invitation par l'hôte d'une room
+
+    socket.on('refuse game', (room) =>{
+        rooms.forEach(r => {
+            if(r.id === room){
+                r.players.forEach(p =>{
+                    io.to(p.socketId).emit('waiting ended');
+                })
+            }
+        });
+    });
+
+    // Envoi d'un input de mouvement de la part d'un joueur
     socket.on('mouvement', (mouvement, joueurId) =>{
         let message = "";
         wss.clients.forEach((client) =>{
@@ -161,10 +179,13 @@ io.on('connection', (socket) => {
 });
 
 //-------------------------------------------//
+//-------------------------------------------//
 //---------------- Fonctions ----------------//
 //-------------------------------------------//
+//-------------------------------------------//
 
-// Deconnexion du joueur 
+
+// Deconnexion d'un joueur 
 function disconnect_to_room(disconnectedPlayer, disconnectedRoom, socket){
     if(disconnectedPlayer.host === true){  //Transfert du role d'hôte si l'hôte a quitté la partie
         if(disconnectedRoom.players[1]){
@@ -189,6 +210,8 @@ function disconnect_to_room(disconnectedPlayer, disconnectedRoom, socket){
 }
 
 
+// Création d'un room
+
 function createRoom(player) {
     const room = { id: roomId(), players: [] , inGame: false};
 
@@ -206,6 +229,13 @@ function roomId() {
 }
 
 
+//----------------------------------------------//
+//----------------------------------------------//
+//---------- Partie Serveur Websocket ----------//
+//----------------------------------------------//
+//----------------------------------------------//
+
+// Communication avec le Jeu
 
 wss.on('connection', (ws)=>{
     console.log("Unity connected");
@@ -215,12 +245,16 @@ wss.on('connection', (ws)=>{
         console.log(mess)
         if(mess === `"asking players"`){
             rooms.forEach(r =>{
+
+                // Désactive les manettes pour les joueurs les ayant comme affichage
                 if(r.inGame === true){
                     r.players.forEach(p =>{
                         io.to(p.socketId).emit('undisplay manette');
                     })
-                    r.inGame = false;
+                    r.inGame = false; //On repasse le statut de la room comm n'étant pas en jeu
+                    io.emit('update rooms', rooms);
                 }
+                // Affiche la demande d'attente de nouveaux joueurs
                 if(r.players.length > 1){
                     r.players.forEach(p=>{
                         io.to(p.socketId).emit('waiting players');
@@ -228,8 +262,21 @@ wss.on('connection', (ws)=>{
                 }
             })
         }
+        if(mess === `"Nombre player"`){
+            rooms.forEach(r =>{
+                if(r.inGame === true){
+                    wss.clients.forEach((client)=>{
+                        if(client.readyState == WebSocket.OPEN){
+                            client.send((`NBPlayers${r.players.length}`));
+                        }
+                    })
+
+                }
+            })
+        }
     });
 });
+
 
 
 // Handle upgrade requests
