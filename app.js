@@ -7,7 +7,7 @@ const SocketIO = require('socket.io');
 const app = express();
 const port = 8080;
 // const ip = 'localhost';
-const ip = '192.168.227.105';
+const ip = '10.224.0.83';
 
 
 const server = http.createServer(app);
@@ -192,6 +192,7 @@ function disconnect_to_room(disconnectedPlayer, disconnectedRoom, socket){
             disconnectedRoom.players[1].host = true;
             console.log(`[Transfert host] - ${disconnectedPlayer.username} -> ${disconnectedRoom.players[1].username}`)
             io.to(disconnectedRoom.players[1].socketId).emit('new host');
+
         }
     }
     disconnectedRoom.players = disconnectedRoom.players.filter(player => player.socketId !== socket.id); //Supression du joueur
@@ -203,6 +204,7 @@ function disconnect_to_room(disconnectedPlayer, disconnectedRoom, socket){
     else{ // Sinon on uptade la liste des joueurs
         disconnectedRoom.players.forEach(p =>{
             p.playerId = disconnectedRoom.players.indexOf(p) +1;
+            io.to(p.socketId).emit("update id",p.playerId);
         });
         io.to(disconnectedRoom.id).emit('update player', disconnectedRoom.players);
     }

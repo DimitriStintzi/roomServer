@@ -111,6 +111,10 @@ socket.on('update player', (players)=>{
     playerList.innerHTML = html;
 });
 
+socket.on("update id", (playerid)=>{
+    player.playerId = playerid;
+});
+
 // Attribution de l'hôte
 socket.on('new host',() => {
     player.host = true;
@@ -322,3 +326,9 @@ socket.on('join room', (room) => {
     player.playerId = room.players.length;
     updateManetteBackground(player.playerId);
 });
+
+function vibrateDevice() {
+    if (navigator.vibrate) {
+        // Vibrate for 200 milliseconds
+        navigator.vibrate(200);
+    }}
