@@ -1,21 +1,13 @@
-# Tic Tac Toe
-
-Dépôt pour la vidéo YouTube [Créer un jeu de morpion multijoueur avec Node.JS, Socket.IO et Bootstrap 5](https://www.youtube.com/watch?v=Mct3TqiCxLY)
+Ce dépot ne représente que la partie serveur d'un projet basé sur Unity, le but du projet est de créer un jeu multijoueur sur Unity pour lequel les joueurs utilisent leur télé^hone en guise de manette.
+Il y a donc une partie serveur SocketIo (io) pour tout la communication Web/Serveur et une partie serveur WebSocket (ws) pour la communication Unity/serveur.
 
 ## Fonctionnalités
 
-- Jeu de morpion à 2 joueurs
 - Système de salons
-- Système d'invitation
-- Possibilité de rejouer avec le même adversaire
+- Mise à jour en temps réel de l'état des salons (Nombre joueurs et En jeu ou non)
+- Existance d'un Hôte et transfert de l'hôte lors de la déconnexion du salon
+- Joueur numérotés dans le salon grâce à un Id
 
-## Technologies
-
-- [Node.JS]
-- [Visual Studio Code ]
-- [Bootstrap 5]
-- [jQuery]
-- [Express JS]
 
 ## Installation
 
@@ -24,6 +16,7 @@ Dépôt pour la vidéo YouTube [Créer un jeu de morpion multijoueur avec Node.J
 ```sh
 npm install
 ```
+Attention à bien effectuer la commande dans le terminal ayant pour chemin le dossier roomServer
 
 #### Exécuter l'application web
 
